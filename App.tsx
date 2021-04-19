@@ -1,19 +1,10 @@
 import React from 'react';
-import {View,Text,StyleSheet} from 'react-native'
+import {Welcome} from './src/pages/Welcome'
 
 export default function App(){
   return(
-    <View style={styles.container}>
-      <Text>aaa</Text>
-    </View>
+    <Welcome/>
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex:1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
-})
 
