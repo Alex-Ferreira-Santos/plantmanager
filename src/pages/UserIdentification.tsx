@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
-import {View, Text,StyleSheet,SafeAreaView,TextInput,KeyboardAvoidingView, Platform} from 'react-native'
+import {View, Text,StyleSheet,SafeAreaView,TextInput,KeyboardAvoidingView, Platform,TouchableWithoutFeedback, Keyboard} from 'react-native'
 import {Button} from '../components/Button'
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
+import { useNavigation } from '@react-navigation/core';
 
 export function UserIdentification(){
     const [isFocused,setIsFocused] = useState(false)
     const [isFilled,setIsFilled] = useState(false)
     const [name,setName] = useState<string>('')
+    const navigation = useNavigation()
+
+    function handleSubmit(){
+        navigation.navigate('Confirmation')
+    }
 
     function handleInputBlur(){
         setIsFocused(false)
@@ -29,6 +35,7 @@ export function UserIdentification(){
                 style={styles.container}
                 behavior={Platform.OS === 'ios' ? 'padding':'height'}
             >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.content}>
                     <View style={styles.form}>
                         <Text style={styles.emoji}>{ isFilled ? '😄':'😀'}</Text>
@@ -44,12 +51,13 @@ export function UserIdentification(){
                             onChangeText={handleInputChange}
                         />
                         <View style={styles.footer}>
-                            <Button/>
+                            <Button onPress={handleSubmit} title="Confirmar"/>
                         </View>
                         
                     </View>
                     
                 </View>
+                </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
         </SafeAreaView>
     )
