@@ -1,11 +1,12 @@
 import React,{useEffect, useState} from 'react';
 import {Text, View, StyleSheet,FlatList } from 'react-native'
 import colors from '../styles/colors';
-import {Header} from '../components/Header'
+import api from '../services/api';
 import fonts from '../styles/fonts';
 import { EnviromentButton } from '../components/EnviromentButton';
-import api from '../services/api';
+import {Header} from '../components/Header'
 import { PlantCardPrimary } from '../components/PlantCardPrimary';
+import {Load} from '../components/Load'
 
 interface EnviromentProps{
     key: string,
@@ -30,6 +31,11 @@ export function PlantSelect(){
     const [plants,setPlants] = useState<PlantProps[]>([])
     const [filteredPlants,setFilteredPlants] = useState<PlantProps[]>([])
     const [enviromentsSelected,setEnviromentSelected] = useState('all')
+    const [loading,setLoading] = useState(true)
+
+    const [page, setPage] = useState(1)
+    const [loadingMore,setLoadingMore] = useState(false)
+    const [loadedAll,setLoadedAll] = useState(false)
 
     function handleEnviromentSelected(enviroments: string){
         setEnviromentSelected(enviroments)
@@ -61,12 +67,31 @@ export function PlantSelect(){
 
     useEffect(()=>{
         async function fetchPlants(){
-            const {data} = await api.get('plants?_sort=name&_order=asc')
-            setPlants(data)
+            const {data} = await api.get(`plants?_sort=name&_order=asc&_page=${page}&_limit=8`)
+
+            if(!data){
+                return setLoading(true)
+            }
+
+            if(page>1){
+                setPlants( oldValue => [...oldValue,...data])
+                setFilteredPlants( oldValue => [...oldValue,...data])
+            }else{
+                setPlants(data)
+                setFilteredPlants(data)
+            }
+            
+            setLoading(false)
+            setLoadingMore(false)
         }
 
         fetchPlants()
     },[])
+
+    if(loading){
+        return <Load/>
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
