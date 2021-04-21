@@ -28,6 +28,23 @@ interface PlantProps{
 export function PlantSelect(){
     const [enviroments,setEnviroment] = useState<EnviromentProps[]>([])
     const [plants,setPlants] = useState<PlantProps[]>([])
+    const [filteredPlants,setFilteredPlants] = useState<PlantProps[]>([])
+    const [enviromentsSelected,setEnviromentSelected] = useState('all')
+
+    function handleEnviromentSelected(enviroments: string){
+        setEnviromentSelected(enviroments)
+
+        if(enviromentsSelected === 'all'){
+            return setFilteredPlants(plants)
+        }
+
+        const filteredPlants = plants.filter( plant => 
+            plant.environments.includes(enviroments)
+        )
+
+        setFilteredPlants(filteredPlants)
+    }
+
     useEffect(()=>{
         async function fetchEnviroment(){
             const {data} = await api.get('plants_environments?_sort=title&_order=asc')
@@ -44,7 +61,7 @@ export function PlantSelect(){
 
     useEffect(()=>{
         async function fetchPlants(){
-            const {data} = await api.get('plants')
+            const {data} = await api.get('plants?_sort=name&_order=asc')
             setPlants(data)
         }
 
@@ -57,11 +74,16 @@ export function PlantSelect(){
                 <Text style={styles.title}>Em qual ambiente</Text>
                 <Text style={styles.subtitle}>Você quer colocar sua planta?</Text>
             </View>
+
             <View>
                 <FlatList 
                 data={enviroments}
                 renderItem={({item})=>(
-                    <EnviromentButton title={item.title} active/>
+                    <EnviromentButton 
+                        title={item.title}
+                        active={item.key === enviromentsSelected}
+                        onPress={()=>handleEnviromentSelected(item.key)}
+                    />
                 )}
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -71,7 +93,7 @@ export function PlantSelect(){
 
             <View style={styles.plants}>
                 <FlatList
-                    data={plants}
+                    data={filteredPlants}
                     renderItem={({item})=>(
                         <PlantCardPrimary data={item}/>
                     )}
