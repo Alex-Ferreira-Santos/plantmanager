@@ -10,7 +10,7 @@ export function Header(){
         <View style={styles.container}>
             <View>
                 <Text style={styles.greetings}>Olá,</Text>
-                <Text style={styles.userName}>Rodrigo</Text>
+                <Text style={styles.userName}>Alex</Text>
             </View>
             <Image source={UserImg} style={styles.image}/>
         </View>
@@ -25,7 +25,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 20,
         marginTop: getStatusBarHeight(),
-        padding: 20,
     },
     greetings:{
         fontSize: 32,
