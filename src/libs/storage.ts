@@ -33,9 +33,9 @@ export async function savePlant(plant:PlantProps):Promise<void>{
         if(repeat_every === 'week'){
             const interval = Math.trunc(7/times)
             nextTime.setDate(now.getDate() + interval)
-        }/*else{
+        }else{
             nextTime.setDate(nextTime.getDate() + 1)
-        }*/
+        }
         const seconds = Math.abs(
             Math.ceil(now.getTime() - nextTime.getTime())/1000
         )
@@ -98,8 +98,9 @@ export async function loadPlant():Promise<PlantProps[]>{
 
 export async function removePlant(id: string): Promise<void>{
     const data = await AsyncStorage.getItem('@plantmanager:plants')
+    
     const plants = data ? (JSON.parse(data) as StoragePlantProps) : {}
-
+    console.log(plants[id])
     await Notifications.cancelScheduledNotificationAsync(plants[id].notificationId)
 
     delete plants[id]

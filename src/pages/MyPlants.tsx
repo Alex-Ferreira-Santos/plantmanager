@@ -14,6 +14,7 @@ export function MyPlants(){
     const [myPlants,setMyPlants] = useState<PlantProps[]>([])
     const [loading,setLoading] = useState(true)
     const [nextWaterd,setNextWaterd] = useState<string>()
+    const [isEmpty,setIsEmpty] = useState(false)
 
     function handleRemove(plant:PlantProps){
         Alert.alert('Remover',`deseja remover a ${plant.name}`,[{
@@ -28,6 +29,7 @@ export function MyPlants(){
                         oldData.filter((item)=> item.id !== plant.id)
                     )
                 }catch(error){
+                    console.log(error)
                     Alert.alert('Não foi possivel remover 😥')
                 }
             }
@@ -37,6 +39,11 @@ export function MyPlants(){
     useEffect(()=>{
         async function loadStorageData(){
             const plantsStoraged = await loadPlant()
+            if(plantsStoraged.length === 0){
+                setLoading(false)
+                setIsEmpty(true)
+                return
+            }
             const nextTime = formatDistance(
                 new Date(plantsStoraged[0].dateTimeNotification).getTime(),
                 new Date().getTime(),
@@ -44,9 +51,9 @@ export function MyPlants(){
             )
 
             setNextWaterd(
-                `Não esqueça de regar a ${plantsStoraged[0].name} à ${nextTime} horas`
+                `Não esqueça de regar a ${plantsStoraged[0].name} à ${nextTime}`
             )
-
+            setIsEmpty(false)
             setMyPlants(plantsStoraged)
             setLoading(false)
 
@@ -55,33 +62,34 @@ export function MyPlants(){
         loadStorageData()
     },[])
 
+    
     if(loading){
         return <Load/>
     }
     return(
         <View style={styles.container}>
             <Header/>
+            {isEmpty && (<Text style={styles.tip}>Cadastre uma planta primeiro {'\n'} para aparecer aqui!</Text>)}
+            {!isEmpty && (<><View style={styles.spotlight}>
+                    <Image source={waterDrop} style={styles.spotlightImage}/>
+                    <Text style={styles.spotlightText}>{nextWaterd}</Text>
+                </View>
 
-            <View style={styles.spotlight}>
-                <Image source={waterDrop} style={styles.spotlightImage}/>
-                <Text style={styles.spotlightText}>{nextWaterd}</Text>
-            </View>
-
-            <View style={styles.plants}>
-                <Text style={styles.plantsTitle}>Próximas regadas</Text>
-                <FlatList 
-                    data={myPlants}
-                    keyExtractor={(item)=> String(item.id)}
-                    renderItem={({ item }) => (
-                        <PlantCardSecondary 
-                            data={item}
-                            handleRemove={()=>{handleRemove(item)}}
-                        />
-                    )}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{flex:1}}
-                />
-            </View>
+                <View style={styles.plants}>
+                    <Text style={styles.plantsTitle}>Próximas regadas</Text>
+                    <FlatList 
+                        data={myPlants}
+                        keyExtractor={(item)=> String(item.id)}
+                        renderItem={({ item }) => (
+                            <PlantCardSecondary 
+                                data={item}
+                                handleRemove={()=>{handleRemove(item)}}
+                            />
+                        )}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{flex:1}}
+                    />
+                </View></>)}
         </View>
     )
 }
@@ -122,5 +130,13 @@ const styles = StyleSheet.create({
         fontFamily: fonts.heading,
         color: colors.heading,
         marginVertical: 20,
+    },
+    tip:{
+        fontSize: 20,
+        fontFamily: fonts.heading,
+        color: colors.heading,
+        textAlign: 'center',
+        position: 'absolute',
+        top: 250,
     }
 })
