@@ -29,7 +29,6 @@ export function MyPlants(){
                         oldData.filter((item)=> item.id !== plant.id)
                     )
                 }catch(error){
-                    console.log(error)
                     Alert.alert('Não foi possivel remover 😥')
                 }
             }
