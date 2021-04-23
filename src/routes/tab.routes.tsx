@@ -28,7 +28,7 @@ const AuthRoutes = () => {
                     />
                 )
             }}/>
-            <AppTab.Screen name="Minhas Planta" component={MyPlants} options={{
+            <AppTab.Screen name="Minhas Plantas" component={MyPlants} options={{
                 tabBarIcon: (({size,color}) => 
                     <MaterialIcons name="format-list-bulleted"
                     size={size}
